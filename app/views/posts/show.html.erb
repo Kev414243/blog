@@ -2,6 +2,60 @@
 
 <%= render @post %>
 
+<div id="comments">
+    <h3>Comments:</h3>
+    <% @post.comments.order(created_at: :desc).each do |comment| %>
+      <div id="<%= dom_id(comment) %>">
+        <p>
+          <strong>Posted <%= time_ago_in_words(comment.created_at) %></strong>
+        </p>
+
+        <p>
+          <strong>Body:</strong>
+          <%= comment.body %>
+        </p>
+
+        <p>
+          <strong>Usuario:</strong>
+          <%= comment.user.first_name %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="new_comment">
+    <h3>Add a Comment:</h3>
+    <%= form_with(model: [@post, @post.comments.build], local: true) do |form| %>
+      <% if form.object.errors.any? %>
+        <div style="color: red">
+          <h2><%= pluralize(form.object.errors.count, "error") %> prohibited this comment from being saved:</h2>
+          <ul>
+            <% form.object.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.hidden_field :post_id, value: @post.id %>
+      </div>
+
+      <div>
+        <%= form.label :body, style: "display: block" %>
+        <%= form.text_area :body %>
+      </div>
+
+      <div>
+        <%= form.text_field :user_id %>
+      </div>
+
+      <div>
+        <%= form.submit "Add Comment" %>
+      </div>
+    <% end %>
+  </div>
+
 <div>
   <%= link_to "Edit this post", edit_post_path(@post) %> |
   <%= link_to "Back to posts", posts_path %>
